@@ -1,5 +1,4 @@
-// Da Wikipedia Italia. https://it.wikipedia.org/wiki/Morra_cinese 
-
+// Da Wikipedia Italia. https://it.wikipedia.org/wiki/Morra_cinese
 #include <stdio.h>
 
 void isWinning(int *sheldon, int *leonard) {
@@ -23,7 +22,7 @@ void isWinning(int *sheldon, int *leonard) {
 
 int main() {
     int sheldon, leonard;
-    // printf("Inserire due numeri interi compresi tra 1 e 5 inclusi: ");
+    printf("Inserire due numeri interi compresi tra 1 e 5 inclusi: ");
     int success = scanf("%d %d", &sheldon, &leonard);
     if (success != 2) {
         printf("Non valido");

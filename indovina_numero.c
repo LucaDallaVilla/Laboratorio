@@ -14,7 +14,6 @@ int tentativo(int t) {
     }
 }
 
-
 int main(void) {
     // Fai un tentativo con un numero t
     int t = 50;

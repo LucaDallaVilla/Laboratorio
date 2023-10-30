@@ -1,5 +1,13 @@
 #include <stdio.h>
 
+void somma_max(int list[])
+
+int main() {
+    int list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    somma_max(list);
+    return 0;
+}
+
 void somma_max(int list[]) {
     int attempt[sizeof(list) / sizeof(list[0])];
     int i = 0;
@@ -21,12 +29,6 @@ void somma_max(int list[]) {
             return;
         }
 
-\\        i++;
+        i++;
     }
-}
-
-int main() {
-    int list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-    somma_max(list);
-    return 0;
 }

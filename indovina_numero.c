@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int tentativo(int t) {
+int tentativo(int t, int i);
+
+int tentativo(int t, int i) {
     int n = 99;
     if (t < n) {
         return 0;
@@ -9,8 +12,8 @@ int tentativo(int t) {
         return 1;
     }
     else {
-        printf("Hai vinto\n");
-        return 100;
+        printf("Hai indovinato il numero %d in %d tentativi\n", n, i);
+        exit(0);
     }
 }
 
@@ -20,7 +23,7 @@ int main(void) {
     int delta = t/2;
     
     for (int i=0; i<7; i++) {
-        if (tentativo(t)) { // t é > del numero da indovinare
+        if (tentativo(t, i)) { // t é > del numero da indovinare
             t -= delta;
         }
         else { // t é < del numero da indovinare

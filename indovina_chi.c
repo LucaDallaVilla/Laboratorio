@@ -1,82 +1,96 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #define NUM_PERS 24
 
-void stringCommon(char string1[], int length1, char string2[], int length2, char result[]);
+int stringCommon(char string1[], int length1, char string2[], size_t length2, char result[]);
+
 
 int main() {
     char input[NUM_PERS];
     int input_length;
-
     const char* nomi[NUM_PERS] = {
         "Claire","Eric",   "Maria", "George","Bernard","Sam",    "Tom",    "Paul",
         "Joe",   "Frans",  "Anne",  "Max",   "Alex",   "Philip", "Bill",   "Anita",  
-        "David", "Charles","Herman","Peter", "Susan",  "Robert", "Richard","Alfred", 
-    };
-
+        "David", "Charles","Herman","Peter", "Susan",  "Robert", "Richard","Alfred" };
     // Gli attributi dei soggetti fermati, codificati come stringa
     const char* attributi[NUM_PERS] = {
         "drco", "bc",   "dtc", "wc",   "tcg",  "wpo",  "npzo", "wo",  
         "bo",   "r",    "dn",  "nfsg", "nfs",  "nal",  "rpal", "dblz", 
-        "ba",   "bfs",  "rpg", "wszg", "dwls", "tlzg", "tpfa", "rfz", 
-    };
+        "ba",   "bfs",  "rpg", "wszg", "dwls", "tlzg", "tpfa", "rfz" };
 
-    // ottengo gli attributi del personaggio da indovinare
-    // printf("Inserire gli attributi: ");
     scanf("%s%n", input, &input_length);
-    // printf("SAS: %d\n", input_length);
+    char input_m[input_length];
+    char input_M[input_length];
+    int counter_M = 0;
+    int counter_m = 0;
 
-    // printf("Nome\tAttr.\tInput\tComune\n");
-    // puts("");
+    for (int i=0; i<input_length; i++) {
+        if (isupper(input[i])) {
+            input_M[counter_M] = input[i];
+            counter_M++;
+        }
+        else {
+            input_m[counter_m] = input[i];
+            counter_m++;
+        }
+    }
 
-    int maxAttributes = 0;
-    int indexes[NUM_PERS];
+    // keeps track of the maximum number of attributes in common with each character
+    int maxCommonAttributes = 0;
+    int indexes[NUM_PERS] = {-1};
     int counter = 0;
+    char result[5];
+
     for (int i=0; i<NUM_PERS; i++) {
-        char result[5];
-        stringCommon(TODO, input_length, (char*)attributi[i], 5, result);
-        // printf("%s\t%s\t%s\t%s\n", nomi[i], attributi[i], input, result);
-
-        // ottiene il numero di attributi trovati
-        int resultLength = 0;
-        for (int i=0; i<5; i++) {
-            if (result[i] != '\0') {
-                resultLength++;
-            }
-        }
-        // se i nuovi risultati sono di più dei precedenti salvo l'indice del nuovo risultato
-        if (resultLength == maxAttributes) {
-            maxAttributes = resultLength;
+        int commonAttributes = stringCommon(input_m, input_length, (char *)attributi[i], strlen(attributi[i]), result);
+        if (commonAttributes == maxCommonAttributes) {
             indexes[counter] = i;
             counter++;
-        }
-        else if (resultLength > maxAttributes) {
+        } else if (commonAttributes > maxCommonAttributes) {
             for (int j=0; j<NUM_PERS; j++) {
-                indexes[j] = '\0';
+                indexes[i] = -1;
+                counter = 0;
             }
-            counter = 0;
-            maxAttributes = resultLength;
+
+            maxCommonAttributes = commonAttributes;
             indexes[counter] = i;
             counter++;
         }
     }
 
-    int i = 0;
-    while (indexes[i] != '\0') {
-        printf("%s\n", nomi[indexes[i]]);
-        i++;
+    int suspectsIndexes[NUM_PERS] = {-1};
+    for (int i=0; i<NUM_PERS; i++) {
+        suspectsIndexes[i] = -1;
     }
-    printf("%d", i);
+    int k=0;
+    for (int i=0; i<counter; i++) {
+        // avoids all null indexes
+        if (indexes[i] != -1) {
+            for (int j=0; j<input_length; j++) {
+                if (strchr(nomi[indexes[i]], tolower(input_M[j])) == NULL) {
+                    suspectsIndexes[k] = indexes[i];
+                    k++;
+                }
+            }
+        }
+    }
 
-    // for (int i=0; i<sizeof(indexes)/sizeof(indexes[0]); i++) {
-    //     printf("%s\n", nomi[indexes[i]]);
-    // }
+    for (int i=0; i<NUM_PERS; i++) {
+        if (suspectsIndexes[i] != -1) {
+            printf("%s\n", nomi[suspectsIndexes[i]]);
+        }
+    }
 
-    // puts("");
+    puts("");
+    printf("%d\n", counter);
+    
     return 0;
 }
 
-void stringCommon(char string1[], int length1, char string2[], int length2, char result[]) {
+
+
+int stringCommon(char string1[], int length1, char string2[], size_t length2, char result[]) {
     // elimino tutti gli elementi dell'array
     for (int i=0; i<5; i++) {
         result[i] = '\0';
@@ -84,11 +98,13 @@ void stringCommon(char string1[], int length1, char string2[], int length2, char
     
     int c = 0;
     for (int i=0; i<length1; i++) {
-        for (int j=0; j<length2; j++) {
+        for (size_t j=0; j<length2; j++) {
             if (string1[i] == string2[j]) {
                 result[c] = string1[i];
                 c++;
             }
         }
     }
+
+    return c;
 }

@@ -35,10 +35,6 @@ void leggi_matrice_irregolare(const size_t rows, const size_t cols,
 int trova_percorso(const size_t rows, const size_t cols, const int mat[rows][cols],
                     const size_t from, const size_t to, const size_t rags[rows]);
 
-void aggiorna_indici_citta(int* citta, int cols, int rows, int indice, const int mat[rows][cols], int n_elementi);
-
-void stampa_citta(int* citta, int n_elementi);
-
 
 int main(void) {
     size_t rows, cols;
@@ -61,6 +57,8 @@ int main(void) {
             printf("DIRETTO\n");
         } else if (result == 1) {
             printf("1 CAMBIO\n");
+        } else {
+            printf("ERRORE\n");
         }
     }    
 }
@@ -77,43 +75,32 @@ void leggi_matrice_irregolare(const size_t rows, const size_t cols,
     }
 }
 
-void stampa_citta(int* citta, int n_elementi) {
-    for (int i=0; i<n_elementi; i++) {
-        printf("%d\t", citta[i]);
-    }
-}
-
-void aggiorna_indici_citta(int* citta, int cols, int rows, int indice, const int mat[rows][cols], int n_elementi) {
-    // assert(n_elementi<=cols);
-    printf("%d<%d", indice, rows);
-    // assert(indice<rows);
-
-    for (int i=0; i<cols; i++) {
-        citta[i] = -1;
-    }
-    for (int i=0; i<n_elementi; i++) {
-        citta[i] = mat[indice][i];
-    }
-}
-
 int trova_percorso(const size_t rows, const size_t cols, const int mat[rows][cols],
                     const size_t from, const size_t to, const size_t rags[rows]) {
-    int risultato = -1;
-    int esegui = 1;
-    int indici_citta[cols];
-    aggiorna_indici_citta(indici_citta, cols, rows, from, mat, cols);
+    int result = -1;
+    bool esegui = true;
 
-    for (int i=0; indici_citta[i] != -1; i++) {
-        for (int t=0; t<2; t++) {
-            for (int e=0; e<rags[i] && esegui; e++) {
-                if (e == to) {
-                    esegui = 0;
-                    risultato = t;
-                }
-            }
-            aggiorna_indici_citta(indici_citta, cols, rows, i, mat, rags[i]);
+    // cerca percorso diretto
+    for (int i=0; i<rags[from] && esegui; i++) {
+        if (mat[from][i] == to) {
+            result = 0;
+            esegui = false;
         }
     }
 
-    return risultato;
+    // cerca percorso con un cambio
+    // per ciascuna città collegata alla partenza...
+    for (int i=0; i<rags[from] && esegui; i++) {
+        // ...controlla il collegamento con la città dove fare il cambio
+        // cambio rappresenta la città dove prendere la coincidenza
+        int cambio = mat[from][i];
+        for (int j=0; j<rags[cambio]; j++) {
+            if (mat[cambio][j] == to) {
+                result = 1;
+                esegui = false;
+            }
+        }
+    }
+
+    return result;
 }

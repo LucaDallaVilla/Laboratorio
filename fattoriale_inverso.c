@@ -29,7 +29,7 @@ int fattoriale_inverso(unsigned long long int m, unsigned long long int* accumul
             *accumulatore *= contatore + 1;
             if (*accumulatore >= m) {
                 *accumulatore /= contatore + 1;
-                contatore++;    
+                contatore++;
                 break;
             }
         }

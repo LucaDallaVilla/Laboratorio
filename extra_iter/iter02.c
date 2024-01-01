@@ -1,64 +1,53 @@
-/* Scrivere una funzione iterativa e1 con le seguenti caratteristiche:
-
-e1 riceve in input una matrice irregolare VLA (rows, cols, mat, rags) di interi, un intero k, ed un puntatore ad interi pMaxSum
-e1 restituisce true se in tutte le righe di lunghezza non zero la somma degli elementi della riga è multiplo di k.
-Se almeno una riga con tale proprietà sulla somma esiste, il massimo di tutte le somme (sulle righe che rispettano tale proprietà) deve essere scritto nell'intero puntato da pMaxSum.
-In ogni altro caso e1 restituisce false. */
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <limits.h>
 
-bool e1(const size_t rows, const size_t cols,
-        const int mat[rows][cols], const size_t rags[rows],
-        const int k, int *pMaxSum)
-{
-    *pMaxSum = INT_MIN;
-    int somma = 0;
-    bool ret = true;
+int calcola_prodotto(const size_t rows, const size_t cols, 
+	    const int mat[rows][cols], const size_t rags[rows],
+        const int c) {
+    int prodotto = 1;
 
-    for (int r = 0; r < rows; r++)
-    {
-        somma = 0;
-        // calcola somma della riga r
-        for (int c = 0; c < rags[r]; c++)
-        {
-            somma += mat[r][c];
-        }
-
-        printf("Somma: %d\n", somma);
-
-        if (somma != 0)
-        {
-            if (somma % k != 0)
-            {
-                ret = false;
-            }
-            else if (somma > *pMaxSum)
-            {
-                *pMaxSum = somma;
-            }
+    for (int r=0; r<rows; r++) {
+        if (rags[r] > c) {
+            prodotto *= mat[r][c];
         }
     }
 
-    return ret;
+    return prodotto;
 }
 
-int main(void)
+bool e1(const size_t rows, const size_t cols, 
+	    const int mat[rows][cols], const size_t rags[rows],
+	    int *pMinSumProd) 
 {
-    const size_t rows = 2, cols = 5;
-    int mat[2][5] = {
-        {4, 7, 4, 2, 1},
-        {1, 3}};
-    size_t rags[2] = {5, 2};
-    int maxSum;
-    bool ret = e1(rows, cols, mat, rags, 4, &maxSum);
-    if (ret)
-    {
-        printf("T %d\n", maxSum);
+    int selected_rows = 0;
+    int prodotto = 1;
+    int somma = 0;
+    int somma_min = INT_MAX;
+
+    for (int r=0; r<rows; r++) {
+        somma = 0;
+        for (int c=0; c<rags[r]; c++) {
+            prodotto = 0;
+            if (mat[r][c] % 3 == 0) {
+                prodotto = calcola_prodotto(rows, cols, mat, rags, c);
+                // printf("Prodotto della colonna %d: %d\n", c, prodotto);
+                somma += prodotto;
+            }
+        }
+        // printf("Somma della riga %d: %d\n", r, somma);
+        if (somma != 0 && somma % 10 == 0) {
+            selected_rows++;
+            if (somma < somma_min) {
+                somma_min = somma;
+            }
+        }
     }
-    else
-    {
-        printf("F %d\n", maxSum);
+
+    // printf("Selected rows: %d\n", selected_rows);
+    if (selected_rows >= 2) {
+        *pMinSumProd = somma_min;
     }
+    
+    return selected_rows >= 2;
 }

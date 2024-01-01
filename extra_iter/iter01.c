@@ -1,84 +1,64 @@
+/* Scrivere una funzione iterativa e1 con le seguenti caratteristiche:
+
+e1 riceve in input una matrice irregolare VLA (rows, cols, mat, rags) di interi, un intero k, ed un puntatore ad interi pMaxSum
+e1 restituisce true se in tutte le righe di lunghezza non zero la somma degli elementi della riga è multiplo di k.
+Se almeno una riga con tale proprietà sulla somma esiste, il massimo di tutte le somme (sulle righe che rispettano tale proprietà) deve essere scritto nell'intero puntato da pMaxSum.
+In ogni altro caso e1 restituisce false. */
+
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <limits.h>
 
-/*
-{7, 3, 3},
-{6, 6, 4, 8}};
-*/
-
-/* bool e1(const size_t rows, const size_t cols, const int mat[rows][cols],
-        const size_t rags[], int* pMinSumProd) {
-    int prodotto = 1;
+bool e1(const size_t rows, const size_t cols,
+        const int mat[rows][cols], const size_t rags[rows],
+        const int k, int *pMaxSum)
+{
+    *pMaxSum = INT_MIN;
     int somma = 0;
-    int somma_min = INT_MAX;
-    int conta_selex = 0;
-    
-    for (int i=0; i<rows; i++) {
+    bool ret = true;
+
+    for (int r = 0; r < rows; r++)
+    {
         somma = 0;
-        for (int j=0; j<rags[i]; j++) {
-            if (mat[i][j] % 3 == 0) {
-                prodotto = 1;
-                for (int k=0; k<rows; k++) {
-                    if (rags[k] > j) {
-                        // printf("%d; ", mat[k][j]);
-                        prodotto *= mat[k][j];
-                    }
-                }
-                // puts("");
-                somma += prodotto;
-            }
+        // calcola somma della riga r
+        for (int c = 0; c < rags[r]; c++)
+        {
+            somma += mat[r][c];
         }
-        if (somma > 0) {
-            // printf("SOMMA: %d\n", somma);
-            if (somma < somma_min) {
-                somma_min = somma;
+
+        printf("Somma: %d\n", somma);
+
+        if (somma != 0)
+        {
+            if (somma % k != 0)
+            {
+                ret = false;
             }
-            if (somma % 10 == 0) {
-                conta_selex++;
+            else if (somma > *pMaxSum)
+            {
+                *pMaxSum = somma;
             }
         }
     }
-    
-    if (conta_selex >= 2) {
-        *pMinSumProd = somma_min;
-    }
-    
-    return conta_selex >= 2;
-} */
 
-int prodotto_colonna(const size_t rows, const size_t cols,
-    const int mat[rows][cols], const int c) {
-    int prodotto = 1;
-
-    for (int i=0; i<rows; i++) {
-        prodotto *= mat[i][c];
-    }
-
-    printf("Prodotto della colonna indice %d: %d\n", c, prodotto);
-    return prodotto;
+    return ret;
 }
 
-bool e1(const size_t rows, const size_t cols, const int mat[rows][cols],
-        const size_t rags[], int* pMinSumProd) {
-    int selex = 0;
-
-    for (int r=0; r<rows; r++) {
-        int somma = 0;
-        for (int c=0; c<rags[r]; c++) {
-            if (mat[r][c] % 3 == 0) {
-                somma += prodotto_colonna(rows, cols, mat, c);
-            }
-        }
-        if (somma % 10 == 0) {
-            selex++;
-        }
-    }   
-
-    if (selex >= 2) {
-        *pMinSumProd = selex;
+int main(void)
+{
+    const size_t rows = 2, cols = 5;
+    int mat[2][5] = {
+        {4, 7, 4, 2, 1},
+        {1, 3}};
+    size_t rags[2] = {5, 2};
+    int maxSum;
+    bool ret = e1(rows, cols, mat, rags, 4, &maxSum);
+    if (ret)
+    {
+        printf("T %d\n", maxSum);
     }
-
-    return selex >= 2;
+    else
+    {
+        printf("F %d\n", maxSum);
+    }
 }
